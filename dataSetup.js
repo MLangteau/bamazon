@@ -1,4 +1,30 @@
+CREATE SCHEMA bamazon;
 USE bamazon;
+
+// new table 
+CREATE TABLE `departments` (
+	`department_id` INT AUTO_INCREMENT,
+	`department_name` VARCHAR (255) NULL,
+	`over_head_costs` DECIMAL(10,2) NULL,
+	`total_sales` DECIMAL(10,2) NULL,
+	PRIMARY KEY (`department_id`)
+);
+
+SELECT * FROM `products`;
+
+ALTER TABLE `products`
+ADD `product_sales` DECIMAL(10,2) NULL,
+DEFAULT 0
+
+ALTER TABLE `products`
+ADD `product_sales` DECIMAL(10,2) NOT NULL
+
+
+INSERT INTO `departments` (department_name, over_head_costs, total_sales)
+VALUES ("Appliances",.43,0),("Arts and Crafts",.59,0),("Automotive",1.19,0),
+	("Books",.69,0),("Electronics",.79,0),("Fish",.39,0),
+	("Home",.50,0),("Pets",.64,0),("Tools",.27,0);
+
 // price is the cost to the customer
 CREATE TABLE `products` (
 	`item_id` INT AUTO_INCREMENT,
@@ -22,4 +48,4 @@ VALUES ("Super Duty Air Wrench","Tools",11.00,5),
 	("Singer Heavy Duty Sewing Machine","Arts and Crafts",250.45,50);
 
 
-SELECT * FROM `products`;
+SELECT * FROM `departments`;

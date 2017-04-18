@@ -33,7 +33,7 @@ var decideAction = function() {
 	}).then(function(answer) {
 		switch(answer.action) {
 			case choiceA:
-			viewProducts()
+			viewProducts();
 			break;
 
 			case choiceB:

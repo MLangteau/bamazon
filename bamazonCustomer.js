@@ -11,6 +11,7 @@ var connection = mysql.createConnection({
 	database: "bamazon"
 });
 
+var trythis = 0;
 connection.connect(function(err){
 	if (err) throw err;
 // shows the connection number established
@@ -28,22 +29,8 @@ connection.query ('SELECT `item_id`,`product_name`, `price` FROM `products`',fun
 });
 
 /*
-// price is the cost to the customer
-CREATE TABLE `products` (
-	`item_id` INT AUTO_INCREMENT,
-	`product_name` VARCHAR (255) NULL,
-	`department_name` VARCHAR (255) NULL,
-	`price` DECIMAL(10,2) NULL,
-	`stock_quantity` INT NULL,
-	PRIMARY KEY (`item_id`)
-);
-*/
-
-/*
-The app should then prompt users with two messages.
-
-The first should ask them the ID of the product they would like to buy.
-The second message should ask how many units of the product they would like to buy.
+The first prompt should ask them the item_id of the product they would like to buy.
+The second prompt should ask how many units of the product they would like to buy.
 */
 
 var buyItem = function() {
@@ -83,27 +70,91 @@ var buyItem = function() {
       	console.log("answer.id_num: " + answer.id_num);
     		console.log("answer.units: " + answer.units);
 
-      	if (result[0].stock_quantity >= answer.units) {
+      	if (parseInt(result[0].stock_quantity) >= parseInt(answer.units)) {
       		// if the quantity on hand (stock_quantity) is greater than or equal 
       		//   to the amount wanted, subtract the amount wanted (answer.units)
       		//  from the quantity on hand
-      		var updatedQuantity = result[0].stock_quantity - answer.units;
-      		var costWithoutTax = result[0].price * answer.units;
-      		console.log("cost of item(s): $" + costWithoutTax);
+      		var updatedQuantity = parseInt(result[0].stock_quantity) - parseInt(answer.units);
+
+          // totalRevenue of purchase is the price of the item * amount purchased
+          var totalRevenue = parseFloat(result[0].price) * parseFloat(answer.units);
+          
+          // precise_round is a function that gives two decimal places only (in this case)
+          totalRevenue = precise_round(totalRevenue, 2);
+
+          // productTotalSales is the previous product_sales in table + totalRevenue
+          var productTotalSales = parseFloat(result[0].product_sales) +
+                     parseFloat(totalRevenue);     
+
+          console.log("productTotalSales (before parseFloat): $" + productTotalSales);
+
+          productTotalSales = precise_round(productTotalSales, 2);
+
+          //var a = parseFloat(productTotalSales);
+          //productTotalSales = a;
+          console.log("productTotalSales: $" + productTotalSales);
+          console.log("result[0].product_sales: $" + result[0].product_sales);
+
+      		console.log("totalRevenue: $" + totalRevenue);
+          console.log("totalRevenue which equals cost of item(s): $" + totalRevenue);
+
       		console.log("updatedQuantity: " + updatedQuantity);
-// Update the database to reflect the remaining quantity
-  		    connection.query("UPDATE `products` SET ? WHERE ?", [{
-        	  stock_quantity: updatedQuantity
-		        }, {
+
+// Update the products database to reflect the remaining quantity and add the product_sales
+/*
+  		    connection.query("UPDATE `products` SET ? WHERE ?", [
+            {
+        	  stock_quantity: updatedQuantity, product_sales: productTotalSales
+		        }, 
+            {
 		          item_id: answer.id_num
-		        }], function(error) {
-		          if (error) throw err;
-		          console.log("Updated successfully!");
+		        }
+            ], function(error) {
+		          if (error) throw error("Error: did not update quantity and product_sales. Try again later. ");
+		          console.log("Updated quantity and product_sales successfully!");
 		          //start();
-		        });
+		      });
+          connection.end(function(err){
+            if (err) throw err;
+            // shows the connection number established
+            console.log('Disconnected after update product', connection.threadId);
+          });
+*/
+// Update the departments database to add the product_sales the appropriate department_name
+
+        var nextQuery = "SELECT * FROM `departments` WHERE `department_name` = ?";
+        console.log("WHAT?????" + nextQuery, result[0].department_name);
+
+        trythis = result[0].department_name;
+//        connection.end();
+        connection.query(nextQuery, trythis, function(err, result3) {
+          if (err) throw err;// (" SHOOP updated the products, but not the department");
+          console.log("WOOF totalRevenue: " + totalRevenue);
+        //  console.log("department from sale: " + result3[0].department_name);
+        //  console.log("result3[0].total_sales: " + result3[0].total_sales);
+        console.log("result3 ", result3);
+
+          var deptProdTotalSales = parseFloat(result3[0].total_sales) + parseFloat(totalRevenue);
+
+          deptProdTotalSales = precise_round(deptProdTotalSales, 2);
+
+          console.log("deptProdTotalSales: " + deptProdTotalSales);
+          connection.query("UPDATE `departments` SET ? WHERE ?", [
+            {
+              total_sales: deptProdTotalSales
+            }, 
+            {
+              department_name: trythis
+            }
+            ], function(error3) {
+              if (error3) throw error3;
+              console.log("Updated departments total_sales successfully!");
+              //start();
+          });
+        });
 			// Once the update goes through, show the customer the 
 			// total cost of their purchase
-			console.log("Price of item (tax free today): $" + costWithoutTax);
+			console.log("Price of item (tax free): $" + totalRevenue);
       }
       else  // if there is not enough quantity of the item to fulfill the order
       		//    then the order is canceled.
@@ -131,3 +182,8 @@ connection.end(function(err){
 	console.log('Disconnected!', connection.threadId);
 });
 */
+
+function precise_round(num, decimals) {
+   var t = Math.pow(10, decimals);   
+   return (Math.round((num * t) + (decimals>0?1:0)*(Math.sign(num) * (10 / Math.pow(100, decimals)))) / t).toFixed(decimals);
+}
