@@ -10,6 +10,7 @@ CREATE TABLE `departments` (
 	PRIMARY KEY (`department_id`)
 );
 
+SELECT * FROM `departments`;
 SELECT * FROM `products`;
 
 ALTER TABLE `products`
@@ -18,6 +19,16 @@ DEFAULT 0
 
 ALTER TABLE `products`
 ADD `product_sales` DECIMAL(10,2) NOT NULL
+
+
+ALTER TABLE `departments` (over_head_costs)
+VALUES `product_sales` DECIMAL(10,2) NULL,
+DEFAULT 0
+
+ALTER TABLE `departments` (over_head_costs)
+VALUES `product_sales` 1000
+
+"UPDATE `products` SET ?",[{over_head_costs: 1000}]
 
 
 INSERT INTO `departments` (department_name, over_head_costs, total_sales)
@@ -46,6 +57,3 @@ VALUES ("Super Duty Air Wrench","Tools",11.00,5),
 	("Mobil 1 Synthetic Motor Oil","Automotive",.99,40),
 	("Red Line Manual Transmission Fluid","Automotive",5.33,300),
 	("Singer Heavy Duty Sewing Machine","Arts and Crafts",250.45,50);
-
-
-SELECT * FROM `departments`;

@@ -2,186 +2,262 @@
 var mysql = require("mysql");
 // requiring inquirer package for 
 var inquirer = require("inquirer");
+var Table = require('cli-table2');
+
+var deptProdTotalSales = 0;
+var deptName = 0;
+//var prodArray = []; 
+
+var prodAnswer = [];
+//var result = {};
+
+var willFillOrder = false;
+
+var custQuery = "SELECT `item_id`,`product_name`, `price` FROM `products`";
+var custColm = ['item_id','product_name', 'price'];
+var custColWid = [40,50,40];
+
+var allQuery = "SELECT * FROM `products`";
+var allColm = ['item_id','product_name', 'department_name','price','stock_quantity'];
+var allColWid = [20,50,30,20,20];
+
 // creating connection to my local host
 var connection = mysql.createConnection({
 	host: "localhost",
 	port: 3306,
-	user: "",
-	password: "",
+	user: "root",
+	password: "root",
 	database: "bamazon"
 });
 
-var trythis = 0;
+//=================================================================================
+//  This begins it all and prints out a customer list.
+//=================================================================================
 connection.connect(function(err){
 	if (err) throw err;
 // shows the connection number established
 	console.log('Connected!', connection.threadId);
-})
 
-// Display all items available for sale (ids, names, and prices of products)
-connection.query ('SELECT `item_id`,`product_name`, `price` FROM `products`',function (error, result) {
-	if (error) throw error;
-//	console.log('All Products: ', result);
-	for (var i = 0; i<result.length; i++) {
-		console.log("Item ID: " + result[i].item_id + " || Product Name: " + result[i].product_name + " || Price: $" + result[i].price + "\n");
-	}
-	buyItem();
+//  displayAnyTable(custQuery, custColm, custColWid);
+  displayAnyTable(allQuery, allColm, allColWid);
+
 });
 
-/*
-The first prompt should ask them the item_id of the product they would like to buy.
-The second prompt should ask how many units of the product they would like to buy.
-*/
+function displayAnyTable(whichQuery, whichColumns, whichColWidth) {
+//      var query = "SELECT `item_id`,`product_name`, `price` FROM `products`";
+      connection.query(whichQuery, function(err, result) {
+      if (err) throw err;
+      console.log("sub list;");
+// string
+      var itemString = JSON.stringify(result, null, 2);
+      console.log("itemString: " + itemString);
+// JSON 
+      var itemParse = JSON.parse(itemString);
+      console.log("itemParse: " + itemParse);
 
-var buyItem = function() {
-  inquirer.prompt([{
-    name: "id_num",
-    type: "input",
-    message: "Enter Item ID of the item you would like to buy: ",
-    validate: function(value) {
-      if (isNaN(value) === false) {
-        return true;
+      var whichTable = new Table ({
+          head: whichColumns,
+          colWidths: whichColWidth
+      });
+      
+      for (var i = 0; i < itemParse.length; i++){
+          // new array for holding table/items (used to show pretty table)
+          var prodArray = new Array();
+          // add items to array (used to show pretty table)
+          whichTable.push(prodArray);
+          for (var j = 0; j < whichColumns.length; j++) {
+              prodArray.push(itemParse[i][whichColumns[j]]);
+    //          console.log("Each row: ", itemParse[i][custColm[j]]);
+          }
       }
-      return false;
-    }
-  }, {
-    name: "units",
-    type: "input",
-    message: "Enter the number of units of the product you would like to buy: ",
-    validate: function(value) {
-      if (isNaN(value) === false) {
-        return true;
-      }
-      return false;
-  	}
-  }]).then(function(answer) {
+      console.log("\n\n\n\n\n\n\n\n\n\n\n\n");
+      console.log(whichTable.toString());
+      chooseItem();
+    });
 
-    var query = "SELECT * FROM `products` WHERE `item_id` = ?";
-    connection.query(query, [answer.id_num], function(error, result) {
+
+}  // end of displayAnyTable() function
+
+function chooseItem() {
+
+    inquirer.prompt([
+    {
+        name: "id_num",
+        type: "input",
+        message: "Enter Item ID of the item you would like to buy: ",
+        validate: function(value) {
+            if (isNaN(value) === false) {
+                return true;
+            }
+            return false;
+        }
+      }, 
+      {
+          name: "units",
+          type: "input",
+          message: "Enter the number of units of the product you would like to buy: ",
+          validate: function(value) {
+              if (isNaN(value) === false) {
+                  return true;
+              }
+              return false;
+          }
+    }]).then(function(answer) {
+        checkStockQuant(answer.id_num, answer.units);
+    });
+}  // end of chooseItem() function
+
+function checkStockQuant(id, quant) {
 //    connection.query("SELECT * FROM `products` WHERE `item_id` = ?",[answer.id_num], function(err, result) {
-    	if (error) throw error;
 
-      	str = JSON.stringify(result, null, 2);
-      	console.log("result: " + str);
-
-      	str2 = JSON.stringify(result[0], null, 2);
-      	console.log("result[0]: " + str2);
-
-      	console.log("answer.id_num: " + answer.id_num);
-    		console.log("answer.units: " + answer.units);
-
-      	if (parseInt(result[0].stock_quantity) >= parseInt(answer.units)) {
-      		// if the quantity on hand (stock_quantity) is greater than or equal 
-      		//   to the amount wanted, subtract the amount wanted (answer.units)
-      		//  from the quantity on hand
-      		var updatedQuantity = parseInt(result[0].stock_quantity) - parseInt(answer.units);
-
-          // totalRevenue of purchase is the price of the item * amount purchased
-          var totalRevenue = parseFloat(result[0].price) * parseFloat(answer.units);
+      var query = "SELECT * FROM `products` WHERE `item_id` = ?";
+      connection.query(query, [id], function(error, result) {
+          if (error) throw error;
           
-          // precise_round is a function that gives two decimal places only (in this case)
-          totalRevenue = precise_round(totalRevenue, 2);
+          console.log("Item ID: " + result[0].item_id);
+          console.log("result[0]: stringify " + JSON.stringify(result[0], null, 2));
 
-          // productTotalSales is the previous product_sales in table + totalRevenue
-          var productTotalSales = parseFloat(result[0].product_sales) +
-                     parseFloat(totalRevenue);     
+          // holds this for use in other functions
+     //     prodAnswer.push(result[0]);
+          prodAnswer = result[0];
 
-          console.log("productTotalSales (before parseFloat): $" + productTotalSales);
+     //   console.log("prodAnswer[i]: " + result[0]);
 
-          productTotalSales = precise_round(productTotalSales, 2);
+      //    var str = JSON.stringify(result, null, 2);
+      //    console.log("result: " + str);
 
-          //var a = parseFloat(productTotalSales);
-          //productTotalSales = a;
-          console.log("productTotalSales: $" + productTotalSales);
-          console.log("result[0].product_sales: $" + result[0].product_sales);
+          var str2 = JSON.stringify(result[0], null, 2);
+          console.log("result[0]: " + str2);
 
-      		console.log("totalRevenue: $" + totalRevenue);
-          console.log("totalRevenue which equals cost of item(s): $" + totalRevenue);
+          var stockOnHand = (JSON.parse(result[0].stock_quantity));
+          console.log("Stock on hand: " + stockOnHand);
 
-      		console.log("updatedQuantity: " + updatedQuantity);
+          console.log("answer.id_num: " + id);
+          console.log("answer.units: " + quant);
+          console.log("result[0]stock_quantity: ", result[0].stock_quantity);
+      
+          console.log("WHERE prodAnswer: " + prodAnswer);
+    //      willFillOrder = false;
+          if (parseInt(result[0].stock_quantity) >= parseInt(quant)) {
 
+              console.log("stock_quantity " + result[0].stock_quantity + " > quant " + quant);
+
+                // if the quantity on hand (stock_quantity) is greater than or equal 
+                //   to the amount wanted, subtract the amount wanted (answer.units)
+                //  from the quantity on hand
+                var updatedQuantity = parseInt(result[0].stock_quantity) - parseInt(quant);
+
+                // totalRevenue of purchase is the price of the item * amount purchased
+                var totalRevenue = parseFloat(result[0].price) * parseFloat(quant);
+                
+                // precise_round is a function that gives two decimal places only (in this case)
+                totalRevenue = precise_round(totalRevenue, 2);
+
+                // productTotalSales is the previous product_sales in table plus(+) totalRevenue
+                var productTotalSales = parseFloat(result[0].product_sales) + parseFloat(totalRevenue);
+
+                console.log("productTotalSales (before parseFloat): $" + productTotalSales);
+
+                productTotalSales = precise_round(productTotalSales, 2);
+
+                console.log("productTotalSales: $" + productTotalSales);
+                console.log("result[0].product_sales: $" + result[0].product_sales);
+                console.log("totalRevenue: $" + totalRevenue);
+                console.log("totalRevenue which equals cost of item(s): $" + totalRevenue);
+
+                console.log("Quantity to be updated: " + updatedQuantity);
+                willFillOrder = true;
+                console.log("willFillOrder?" + willFillOrder);
+            }
+            else {
+                willFillOrder = false;
+                console.log("Insufficient quantity; cannot fill this order!");
+            } // end of if (parseInt(result[0].stock_quantity) >= parseInt(quant))
+      });  // end of connection query
+      console.log("OUT OF Connection query before update");
 // Update the products database to reflect the remaining quantity and add the product_sales
-/*
-  		    connection.query("UPDATE `products` SET ? WHERE ?", [
-            {
-        	  stock_quantity: updatedQuantity, product_sales: productTotalSales
-		        }, 
-            {
-		          item_id: answer.id_num
-		        }
-            ], function(error) {
-		          if (error) throw error("Error: did not update quantity and product_sales. Try again later. ");
-		          console.log("Updated quantity and product_sales successfully!");
-		          //start();
-		      });
-          connection.end(function(err){
-            if (err) throw err;
-            // shows the connection number established
-            console.log('Disconnected after update product', connection.threadId);
+      var updatedStock = false;
+      if (willFillOrder) {
+          console.log("Here to update");
+          connection.query("UPDATE `products` SET ? WHERE ?", [
+              {
+              stock_quantity: updatedQuantity, product_sales: productTotalSales
+              }, 
+              {
+                item_id: id
+              }
+              ], function(error) {
+              
+                if (error) throw error("Error: did not update quantity and product_sales.");
+                console.log("Updated quantity and product_sales successfully!");
+                updatedStock = true;
           });
-*/
+
+          // update product sales for the department name
+          updateDeptSales(productTotalSales, updatedStock, prodAnswer);
+      } // end of if (willFillOrder)
+
+}  // end of function checkStockQuant(id, quant) 
+
+
+function updateDeptSales(totSales, stockUpdate, prod) {
+
+
+  console.log("totSales: " + totSales + " stockUpdate: " + stockUpdate + " prod department: " + prod.department_name);
+/*
 // Update the departments database to add the product_sales the appropriate department_name
-
         var nextQuery = "SELECT * FROM `departments` WHERE `department_name` = ?";
-        console.log("WHAT?????" + nextQuery, result[0].department_name);
+//        console.log("WHAT?????" + nextQuery, result[0].department_name);
+          console.log("WHAT?????" + nextQuery, prodAnswer.department_name);
 
-        trythis = result[0].department_name;
+ //       deptName = result[0].department_name;
+          deptName = prodAnswer.department_name;
+
+
 //        connection.end();
-        connection.query(nextQuery, trythis, function(err, result3) {
+        connection.query(nextQuery, deptName, function(err, result3) {
           if (err) throw err;// (" SHOOP updated the products, but not the department");
           console.log("WOOF totalRevenue: " + totalRevenue);
         //  console.log("department from sale: " + result3[0].department_name);
         //  console.log("result3[0].total_sales: " + result3[0].total_sales);
         console.log("result3 ", result3);
 
-          var deptProdTotalSales = parseFloat(result3[0].total_sales) + parseFloat(totalRevenue);
+          deptProdTotalSales = parseFloat(result3[0].total_sales) + parseFloat(totalRevenue);
 
           deptProdTotalSales = precise_round(deptProdTotalSales, 2);
 
           console.log("deptProdTotalSales: " + deptProdTotalSales);
+
+          });
+
+          // update the database with the        
           connection.query("UPDATE `departments` SET ? WHERE ?", [
             {
               total_sales: deptProdTotalSales
             }, 
             {
-              department_name: trythis
+              department_name: deptName
             }
             ], function(error3) {
               if (error3) throw error3;
               console.log("Updated departments total_sales successfully!");
               //start();
           });
-        });
-			// Once the update goes through, show the customer the 
-			// total cost of their purchase
-			console.log("Price of item (tax free): $" + totalRevenue);
-      }
-      else  // if there is not enough quantity of the item to fulfill the order
-      		//    then the order is canceled.
-      {
-      	console.log("Insufficient quantity; cannot fill this order!");
-      }
-      connection.end(function(err){
-  		  if (err) throw err;
-        // shows the connection number established
-		    console.log('Disconnected!', connection.threadId);
-      });
-     // runSearch();
-    });
-  });
-};
 
-/*
-var genre = 'Dance',
-limit = 2;
-connection.query("SELECT * FROM `songs` WHERE `genre` = ? LIMIT ?", [genre, limit], 
-
-connection.end(function(err){
-	if (err) throw err;
-// shows the connection number established
-	console.log('Disconnected!', connection.threadId);
-});
+      // Once the update goes through, show the customer the 
+      // total cost of their purchase
+          console.log("Price of item (tax free): $" + totalRevenue);
 */
+
+/*  Future development
+    if (stockUpdate) {
+
+    }
+    else {
+        // back out of the products issue
+    } // end of if/else
+*/
+}  // end of updateDeptSales function
 
 function precise_round(num, decimals) {
    var t = Math.pow(10, decimals);   
