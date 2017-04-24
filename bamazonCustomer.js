@@ -1,12 +1,12 @@
 // requiring mysql server
 var mysql = require("mysql");
-// requiring inquirer package for 
+// requiring inquirer package for
 var inquirer = require("inquirer");
 var Table = require('cli-table2');
 
 var deptProdTotalSales = 0;
 var deptName = 0;
-//var prodArray = []; 
+//var prodArray = [];
 
 var prodAnswer = [];
 //var result = {};
@@ -51,7 +51,7 @@ function displayAnyTable(whichQuery, whichColumns, whichColWidth) {
 // string
       var itemString = JSON.stringify(result, null, 2);
       console.log("itemString: " + itemString);
-// JSON 
+// JSON
       var itemParse = JSON.parse(itemString);
       console.log("itemParse: " + itemParse);
 
@@ -59,7 +59,7 @@ function displayAnyTable(whichQuery, whichColumns, whichColWidth) {
           head: whichColumns,
           colWidths: whichColWidth
       });
-      
+
       for (var i = 0; i < itemParse.length; i++){
           // new array for holding table/items (used to show pretty table)
           var prodArray = new Array();
@@ -91,7 +91,7 @@ function chooseItem() {
             }
             return false;
         }
-      }, 
+      },
       {
           name: "units",
           type: "input",
@@ -113,9 +113,9 @@ function checkStockQuant(id, quant) {
       var query = "SELECT * FROM `products` WHERE `item_id` = ?";
       connection.query(query, [id], function(error, result) {
           if (error) throw error;
-          
-          console.log("Item ID: " + result[0].item_id);
-          console.log("result[0]: stringify " + JSON.stringify(result[0], null, 2));
+
+          // console.log("Item ID: " + result[0].item_id);
+          // console.log("result[0]: stringify " + JSON.stringify(result[0], null, 2));
 
           // holds this for use in other functions
      //     prodAnswer.push(result[0]);
@@ -126,30 +126,28 @@ function checkStockQuant(id, quant) {
       //    var str = JSON.stringify(result, null, 2);
       //    console.log("result: " + str);
 
-          var str2 = JSON.stringify(result[0], null, 2);
-          console.log("result[0]: " + str2);
+          // var str2 = JSON.stringify(result[0], null, 2);
+          // console.log("result[0]: " + str2);
 
           var stockOnHand = (JSON.parse(result[0].stock_quantity));
           console.log("Stock on hand: " + stockOnHand);
-
           console.log("answer.id_num: " + id);
           console.log("answer.units: " + quant);
           console.log("result[0]stock_quantity: ", result[0].stock_quantity);
-      
           console.log("WHERE prodAnswer: " + prodAnswer);
-    //      willFillOrder = false;
+
           if (parseInt(result[0].stock_quantity) >= parseInt(quant)) {
 
               console.log("stock_quantity " + result[0].stock_quantity + " > quant " + quant);
 
-                // if the quantity on hand (stock_quantity) is greater than or equal 
+                // if the quantity on hand (stock_quantity) is greater than or equal
                 //   to the amount wanted, subtract the amount wanted (answer.units)
                 //  from the quantity on hand
                 var updatedQuantity = parseInt(result[0].stock_quantity) - parseInt(quant);
 
                 // totalRevenue of purchase is the price of the item * amount purchased
                 var totalRevenue = parseFloat(result[0].price) * parseFloat(quant);
-                
+
                 // precise_round is a function that gives two decimal places only (in this case)
                 totalRevenue = precise_round(totalRevenue, 2);
 
@@ -173,31 +171,30 @@ function checkStockQuant(id, quant) {
                 willFillOrder = false;
                 console.log("Insufficient quantity; cannot fill this order!");
             } // end of if (parseInt(result[0].stock_quantity) >= parseInt(quant))
+						// Update the products database to reflect the remaining quantity and add the product_sales
+						      var updatedStock = false;
+						      if (willFillOrder) {
+						          console.log("Here to update");
+						          connection.query("UPDATE `products` SET ? WHERE ?", [
+						              {
+						              stock_quantity: updatedQuantity, product_sales: productTotalSales
+						              },
+						              {
+						                item_id: id
+						              }
+						              ], function(error) {
+
+						                if (error) throw error("Error: did not update quantity and product_sales.");
+						                console.log("Updated quantity and product_sales successfully!");
+						                updatedStock = true;
+						          });
+
+						          // update product sales for the department name
+						          updateDeptSales(productTotalSales, updatedStock, prodAnswer);
+						      } // end of if (willFillOrder)
       });  // end of connection query
       console.log("OUT OF Connection query before update");
-// Update the products database to reflect the remaining quantity and add the product_sales
-      var updatedStock = false;
-      if (willFillOrder) {
-          console.log("Here to update");
-          connection.query("UPDATE `products` SET ? WHERE ?", [
-              {
-              stock_quantity: updatedQuantity, product_sales: productTotalSales
-              }, 
-              {
-                item_id: id
-              }
-              ], function(error) {
-              
-                if (error) throw error("Error: did not update quantity and product_sales.");
-                console.log("Updated quantity and product_sales successfully!");
-                updatedStock = true;
-          });
-
-          // update product sales for the department name
-          updateDeptSales(productTotalSales, updatedStock, prodAnswer);
-      } // end of if (willFillOrder)
-
-}  // end of function checkStockQuant(id, quant) 
+}  // end of function checkStockQuant(id, quant)
 
 
 function updateDeptSales(totSales, stockUpdate, prod) {
@@ -230,11 +227,11 @@ function updateDeptSales(totSales, stockUpdate, prod) {
 
           });
 
-          // update the database with the        
+          // update the database with the
           connection.query("UPDATE `departments` SET ? WHERE ?", [
             {
               total_sales: deptProdTotalSales
-            }, 
+            },
             {
               department_name: deptName
             }
@@ -244,7 +241,7 @@ function updateDeptSales(totSales, stockUpdate, prod) {
               //start();
           });
 
-      // Once the update goes through, show the customer the 
+      // Once the update goes through, show the customer the
       // total cost of their purchase
           console.log("Price of item (tax free): $" + totalRevenue);
 */
@@ -260,6 +257,6 @@ function updateDeptSales(totSales, stockUpdate, prod) {
 }  // end of updateDeptSales function
 
 function precise_round(num, decimals) {
-   var t = Math.pow(10, decimals);   
+   var t = Math.pow(10, decimals);
    return (Math.round((num * t) + (decimals>0?1:0)*(Math.sign(num) * (10 / Math.pow(100, decimals)))) / t).toFixed(decimals);
 }
