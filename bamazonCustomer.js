@@ -6,12 +6,14 @@ var Table = require('cli-table2');
 
 var deptProdTotalSales = 0;
 var deptName = 0;
+var totalRevenue = 0;
 //var prodArray = []; 
 
 var prodAnswer = [];
 //var result = {};
 
 var willFillOrder = false;
+var updatedStock = false;
 
 var custQuery = "SELECT `item_id`,`product_name`, `price` FROM `products`";
 var custColm = ['item_id','product_name', 'price'];
@@ -72,6 +74,7 @@ function displayAnyTable(whichQuery, whichColumns, whichColWidth) {
       }
       console.log("\n\n\n\n\n\n\n\n\n\n\n\n");
       console.log(whichTable.toString());
+      console.log("\n\n\n");
       chooseItem();
     });
 
@@ -173,56 +176,51 @@ function checkStockQuant(id, quant) {
                 willFillOrder = false;
                 console.log("Insufficient quantity; cannot fill this order!");
             } // end of if (parseInt(result[0].stock_quantity) >= parseInt(quant))
-      });  // end of connection query
-      console.log("OUT OF Connection query before update");
+            console.log("OUT OF Connection query before update");
 // Update the products database to reflect the remaining quantity and add the product_sales
-      var updatedStock = false;
-      if (willFillOrder) {
-          console.log("Here to update");
-          connection.query("UPDATE `products` SET ? WHERE ?", [
-              {
-              stock_quantity: updatedQuantity, product_sales: productTotalSales
-              }, 
-              {
-                item_id: id
-              }
-              ], function(error) {
-              
-                if (error) throw error("Error: did not update quantity and product_sales.");
-                console.log("Updated quantity and product_sales successfully!");
-                updatedStock = true;
-          });
+            var updatedStock = false;
+            if (willFillOrder) {
+                console.log("Here to update");
+                connection.query("UPDATE `products` SET ? WHERE ?", [
+                    {
+                    stock_quantity: updatedQuantity, product_sales: productTotalSales
+                    }, 
+                    {
+                      item_id: id
+                    }
+                    ], function(error) {
+                    
+                      if (error) throw error("Error: did not update quantity and product_sales.");
+                      console.log("Updated quantity and product_sales successfully!");
+                      updatedStock = true;
+                });
 
-          // update product sales for the department name
-          updateDeptSales(productTotalSales, updatedStock, prodAnswer);
-      } // end of if (willFillOrder)
-
+                // update product sales for the department name
+                updateDeptSales(productTotalSales, updatedStock, prodAnswer, totalRevenue);
+            } // end of if (willFillOrder)
+      });  // end of connection query
+ //     displayAnyTable(allQuery, allColm, allColWid);
+      console.log("updatedStock " + updatedStock);
 }  // end of function checkStockQuant(id, quant) 
 
 
-function updateDeptSales(totSales, stockUpdate, prod) {
+function updateDeptSales(totSales, stockUpdate, prod, revenue) {
 
+  console.log("totSales: " + totSales + " stockUpdate: " + stockUpdate);
+  console.log(" prod department: " + prod.department_name);
 
-  console.log("totSales: " + totSales + " stockUpdate: " + stockUpdate + " prod department: " + prod.department_name);
-/*
 // Update the departments database to add the product_sales the appropriate department_name
         var nextQuery = "SELECT * FROM `departments` WHERE `department_name` = ?";
-//        console.log("WHAT?????" + nextQuery, result[0].department_name);
-          console.log("WHAT?????" + nextQuery, prodAnswer.department_name);
-
- //       deptName = result[0].department_name;
-          deptName = prodAnswer.department_name;
-
-
-//        connection.end();
+        console.log("WHAT?????" + nextQuery, prod.department_name);
+        deptName = prod.department_name;
         connection.query(nextQuery, deptName, function(err, result3) {
           if (err) throw err;// (" SHOOP updated the products, but not the department");
-          console.log("WOOF totalRevenue: " + totalRevenue);
+          console.log("WOOF totalRevenue: " + revenue);
         //  console.log("department from sale: " + result3[0].department_name);
         //  console.log("result3[0].total_sales: " + result3[0].total_sales);
         console.log("result3 ", result3);
 
-          deptProdTotalSales = parseFloat(result3[0].total_sales) + parseFloat(totalRevenue);
+          deptProdTotalSales = parseFloat(result3[0].total_sales) + parseFloat(revenue);
 
           deptProdTotalSales = precise_round(deptProdTotalSales, 2);
 
@@ -240,14 +238,14 @@ function updateDeptSales(totSales, stockUpdate, prod) {
             }
             ], function(error3) {
               if (error3) throw error3;
+              console.log("deptProdTotalSales" + deptProdTotalSales + " deptName " + deptName);
               console.log("Updated departments total_sales successfully!");
-              //start();
+              // Once the update goes through, show the customer the 
+              // total cost of their purchase
+          console.log("Price of item (tax free): $" + totalRevenue);
+
           });
 
-      // Once the update goes through, show the customer the 
-      // total cost of their purchase
-          console.log("Price of item (tax free): $" + totalRevenue);
-*/
 
 /*  Future development
     if (stockUpdate) {
