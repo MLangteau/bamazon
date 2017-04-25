@@ -37,7 +37,6 @@ var decideAction = function() {
 	}).then(function(answer) {
 		switch(answer.action) {
 			case choiceA:
-	//		viewProdSales();
 			displayAnyTable(allQuery, allColm, allColWid, allColmNames);
 			break;
 
@@ -98,24 +97,6 @@ function displayAnyTable(whichQuery, whichColumns, whichColWidth, whichColNames)
           }
       }
 
-/*
-
-
-connection.query("SELECT `artist`, COUNT(`artist`) AS `artcount` FROM top5000 GROUP BY `artist`", function(err, res) {
-    if (err) throw err;
-    //console.log(res);
-    for(i=0; i < res.length; i++)
-    {
-        if(res[i].artcount > 1)
-        {
-            console.log(res[i]);
-        }
-    }
-
-});
-
-*/
-
       console.log("\n\n\n\n\n\n\n\n\n\n\n\n");
       console.log(whichTable.toString());
       console.log("\n\n\n");
@@ -123,32 +104,10 @@ connection.query("SELECT `artist`, COUNT(`artist`) AS `artcount` FROM top5000 GR
     });
 }  // end of displayAnyTable() function
 
-
-/* ===  OLD PRODUCT SALES DISPLAY BELOW ==== 
-
-var viewProdSales = function() {
-	console.log("\nin viewProdSales function");
-// If a Supervisor selects View Product Sales by Department, the app should list these:
-//  department_id, department_name, over_head_costs, product_sales(total_sales), 
-//  & total_profit (calculated).
-	connection.query ('SELECT * FROM `departments`',function (error, result) {
-		if (error) throw error;
-		for (var i = 0; i<result.length; i++) {
-			totProfit = result[i].total_sales - result[i].over_head_costs;
-			totProfit = precise_round(totProfit, 2);
-			console.log("department_id" + result[i].department_id + " || department_name" + result[i].department_name 
-				+ " || over_head_costs" + result[i].over_head_costs + " || product_sales " + result[i].total_sales 
-				+ " || total_profit" + totProfit + "\n");
-		}
-		decideAction();
-	});
-}
- ===  OLD PRODUCT SALES DISPLAY ABOVE ==== */
-
 // If a Ssupervisor selects Add a New Department, allow the Supervisor to add a completely 
 //		new department_name and an over_head_costs value, which is arbitrary for now.
 var addDept = function() {
-	console.log("in addDept function");
+//	console.log("in addDept function");
 	inquirer.prompt([
 	{
 	    name: "dept",  // product_name
@@ -186,7 +145,7 @@ var addDept = function() {
 		}, function(err, res) {
 			if (err) throw err("ERROR: Did not add department; please try again.");
 		});
-		console.log("Added Department");
+		console.log("Added New Department!");
     	connection.end(function(err){
   		  if (err) throw err;
         // shows the connection number established

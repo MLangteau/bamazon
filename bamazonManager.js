@@ -44,7 +44,6 @@ var decideAction = function() {
 			break;
 
 			case choiceB:
-	//		viewLowInventory();
 			allQuery = 'SELECT * FROM `products` WHERE stock_quantity BETWEEN 0 AND 4';
 			displayAnyTable(allQuery, allColm, allColWid);
 			break;
@@ -117,28 +116,10 @@ function displayAnyTable(whichQuery, whichColumns, whichColWidth) {
     });
 }  // end of displayAnyTable() function
 
-// If a manager selects View Low Inventory, then list all items with an 
-// 		inventory count lower than five.
-var viewLowInventory = function() {
-	console.log("in viewLowInventory");
-	var query = 'SELECT `item_id`,`product_name`, `price`, `stock_quantity` FROM `products` WHERE stock_quantity BETWEEN 0 AND 4';
-	connection.query(query, function (error, result) {
-		if (error) throw error;
-		console.log("Items with Low Inventory: \n");
-		for (var i = 0; i<result.length; i++) {
-			console.log("Item ID: " + result[i].item_id + " || Product Name: " + result[i].product_name 
-				+ " || Price: $" + result[i].price + " || Quantity in stock: " + result[i].stock_quantity 
-				+ "\n");
-		}
-
-		decideAction();
-	});
-};
-
 // If a manager selects Add to Inventory, display a prompt that will let the manager
 //   "add more" of any item currently in the store.
 var addInventory = function() {
-	console.log("\nin addInventory\n");
+//	console.log("\nin addInventory\n");
 	inquirer.prompt([{
 	    name: "id_num",
 	    type: "input",
@@ -181,7 +162,7 @@ var addInventory = function() {
 //		var updatedQuantity = result[0].stock_quantity + answer.units;
 		var updatedQuantity = parseInt(result[0].stock_quantity) + parseInt(answer.units);
 
-		console.log("updatedQuantity: " + updatedQuantity);
+//		console.log("updatedQuantity: " + updatedQuantity);
 // Update the database to reflect the remaining quantity
 	    connection.query("UPDATE `products` SET ? WHERE ?", [
 	    {
@@ -192,7 +173,7 @@ var addInventory = function() {
         }
         ], function(error) {
           if (error) throw err;
-          console.log("Updated successfully!");
+          console.log("Updated quantity successfully!");
           //start();
         });
 		connection.end(function(err){
@@ -209,7 +190,7 @@ var addInventory = function() {
 // If a manager selects Add New Product, allow the manager to add a completely new
 //		product to the store product_name, department_name, price, stock_quantity.
 var addProduct = function() {
-	console.log("in addProduct");
+//	console.log("in addProduct");
 	inquirer.prompt([
 	{
 	    name: "prod",  // product_name
@@ -249,7 +230,7 @@ var addProduct = function() {
 			var regex  = /^\d+(?:\.\d{0,2})$/;
 			var numStr = value;
 			if (regex.test(numStr)) {
-				console.log("\nPrice entered is : $" + numStr);
+		//		console.log("\nPrice entered is : $" + numStr);
 				newPrice = +numStr;
 				return true;
 			}
@@ -283,7 +264,7 @@ var addProduct = function() {
 		}, function(err, res) {
 			if (err) throw err("ERROR: Did not add products to inventory, try again");
 		});
-		console.log("Added to Inventory");
+		console.log("Added Product to Inventory");
     	connection.end(function(err){
   		  if (err) throw err;
         // shows the connection number established

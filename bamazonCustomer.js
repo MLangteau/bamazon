@@ -84,7 +84,7 @@ function displayAnyTable(whichQuery, whichColumns, whichColWidth) {
 }  // end of displayAnyTable() function
 
 function chooseItem() {
-    totalRevenue = 0;
+    //totalRevenue = 0;
     inquirer.prompt([
     {
         name: "id_num",
@@ -157,9 +157,9 @@ function checkStockQuant(id, quant) {
             QuantUpdatePossible = false;
             if (willFillOrder) {
         //        console.log("Here to update");
-                console.log("updatedQuantity " + updatedQuantity);
-                console.log("productTotalSales " + productTotalSales);
-                console.log("id: " + id);
+          //      console.log("updatedQuantity " + updatedQuantity);
+          //      console.log("productTotalSales " + productTotalSales);
+          //      console.log("id: " + id);
                 connection.query("UPDATE `products` SET ? WHERE ?", [
                     {
                     stock_quantity: updatedQuantity, product_sales: productTotalSales
@@ -169,10 +169,13 @@ function checkStockQuant(id, quant) {
                     }
                     ], function(err) { 
                       if (err) throw err("Error: did not update quantity and product_sales.");
-                      console.log("Price of item (tax free): $" + totalRevenue);
-                      console.log("Updated quantity and product_sales successfully in products Table!");
-                      QuantUpdatePossible = true;
+                //      console.log("Price of item (tax free): $" + totalRevenue);
+                //     console.log("Updated quantity and product_sales successfully in products Table!");
+                //      QuantUpdatePossible = true;
                     });
+                console.log("Price of item (tax free): $" + totalRevenue);
+                console.log("Updated quantity and product_sales successfully in products Table!");
+                QuantUpdatePossible = true;
                 // update product sales for the department name
                 updateDeptSales(productTotalSales, QuantUpdatePossible, prodAnswer, totalRevenue);
             } // end of if (willFillOrder)
@@ -210,13 +213,13 @@ function updateDeptSales(totSales, quantityUpdate, prod, revenue) {
           deptProdTotalSales = parseFloat(result3[0].total_sales) + parseFloat(revenue);
           deptProdTotalSales = precise_round(deptProdTotalSales, 2);
           deptName = result3[0].department_name;
-          console.log("before end deptProdTotalSales: " + deptProdTotalSales);
-          console.log("before end deptName: " + deptName);
+ //         console.log("before end deptProdTotalSales: " + deptProdTotalSales);
+ //         console.log("before end deptName: " + deptName);
 
 //          });  // end of result3 query
 
           // update the database with the        
-        console.log("Mixer: " + deptProdTotalSales + " " +  deptName);
+  //      console.log("Mixer: " + deptProdTotalSales + " " +  deptName);
 
           connection.query("UPDATE `departments` SET ? WHERE ?", [
             {
@@ -228,8 +231,8 @@ function updateDeptSales(totSales, quantityUpdate, prod, revenue) {
             ], function(error3) {
               if (error3) throw error3;
             //  console.log("this is it! " + total_sales + " " + department_name);
-              console.log("deptProdTotalSales" + deptProdTotalSales + " deptName " + deptName);
-              console.log("Updated total_sales in departments Table successfully!");
+   //           console.log("deptProdTotalSales" + deptProdTotalSales + " deptName " + deptName);
+   //           console.log("Updated total_sales in departments Table successfully!");
               // Once the update goes through, show the customer the 
               // total cost of their purchase
           //console.log("Price of item (tax free): $" + totalRevenue);
