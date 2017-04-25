@@ -13,6 +13,8 @@ CREATE TABLE `departments` (
 SELECT * FROM `departments`;
 SELECT * FROM `products`;
 
+ALTER TABLE `departments` MODIFY total_sales DECIMAL(10,2) NOT NULL DEFAULT 0;
+
 ALTER TABLE `products`
 ADD `product_sales` DECIMAL(10,2) NULL,
 DEFAULT 0
@@ -25,10 +27,19 @@ ALTER TABLE `departments` (over_head_costs)
 VALUES `product_sales` DECIMAL(10,2) NULL,
 DEFAULT 0
 
+ALTER TABLE `products` (stock_quantity)
+VALUES `stock_quantity` DECIMAL(10,2) NOT NULL
+DEFAULT 0
+
 ALTER TABLE `departments` (over_head_costs)
 VALUES `product_sales` 1000
 
 "UPDATE `products` SET ?",[{over_head_costs: 1000}]
+
+INSERT INTO `departments` (total_sales)
+VALUES ("Appliances",.43,0),("Arts and Crafts",.59,0),("Automotive",1.19,0),
+	("Books",.69,0),("Electronics",.79,0),("Fish",.39,0),
+	("Home",.50,0),("Pets",.64,0),("Tools",.27,0);
 
 
 INSERT INTO `departments` (department_name, over_head_costs, total_sales)
