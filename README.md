@@ -1,42 +1,29 @@
 # bamazon
 
-#### Instructions
+####  Bamazon is a "One of a kind" storefront app to take orders from customers, add stock to inventory, and deplete stock from inventory tally products' and departments' sales, and lots more using MySQL and Node.js.  It also tracks overhead costs and calculates total profit for each department.
 
-### Challenge #1: Customer View (Minimum Requirement)
+### The Customer Level will do the following (using node bamazonCustomer.js):
 
-1. Create a MySQL Database called `Bamazon`.
-
-2. Then create a Table inside of that database called `products`.
-
-3. The products table should have each of the following columns:
-
-   * item_id (unique id for each product)
-
-   * product_name (Name of product)
-
-   * department_name
-
-   * price (cost to customer)
-
-   * stock_quantity (how much of the product is available in stores)
-
-4. Populate this database with around 10 different products. (i.e. Insert "mock" data rows into this database and table).
-
-5. Then create a Node application called `bamazonCustomer.js`. Running this application will first display all of the items available for sale. Include the ids, names, and prices of products for sale.
-
-6. The app should then prompt users with two messages.
-
-   * The first should ask them the ID of the product they would like to buy.
-   * The second message should ask how many units of the product they would like to buy.
-
-7. Once the customer has placed the order, your application should check if your store has enough of the product to meet the customer's request.
-
-   * If not, the app should log a phrase like `Insufficient quantity!`, and then prevent the order from going through.
-
-8. However, if your store _does_ have enough of the product, you should fulfill the customer's order.
-   * This means updating the SQL database to reflect the remaining quantity.
-   * Once the update goes through, show the customer the total cost of their purchase.
-
-- - -
-
-* If this activity took you between 8-10 hours, then you've put enough time into this assignment. Feel free to stop here -- unless you want to take on the next challenge.
+    1.  Allows customers to view a list of products (see screenshot #1)
+    2.  Allows customers to order from the list of products.
+    3.  Check to see if to see if the store has enough supply to fill the order.
+        If so, it:
+        a.  subtracts from inventory by updating the SQL database to reflect the remaining stock quantity in the products file.
+        b.  updates the products table with the amount purchased (total revenue of each transaction) added to the products' sales column.
+        c.  and updates the departments table with the total sales for the related department (running tally of departments' sales).
+        
+### The Manager Level will do the following (using node bamazonManager.js):
+    1.  Provides Managers the following list of menu options (see screenshot #2):
+    
+        * View Products for Sale - which prints a table of every available item for sale.  (screenshot provided #3),
+        * View Low Inventory - prints a table of each item with an inventory less than 5,
+        * Add to Inventory - Allows manager to add a specific amount the an item's inventory,
+        * Add New Product - Allows manager to add a new item (the name, along with its department, price, and stock quantity),
+        * Quit the application.
+        
+ ### The Supervisor Level will do the following (using node bamazonSupervisor.js):
+    1.  Provides Supervisors the following list of menu options (see screenshot #4):
+        
+        * View Product Sales by Department (Department ID, Department Name, Overhead Costs, Product Sales, Total Profit,
+        * Create New Department,
+        * Quit the application.
