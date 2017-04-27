@@ -76,7 +76,7 @@ function displayAnyTable(whichQuery, whichColumns, whichColWidth) {
       }
       console.log("\n\n\n\n\n\n\n\n\n\n\n\n");
       console.log(whichTable.toString());
-      console.log("\n\n Go to 'node bamazonManager.js' for stock_quantity and department_name\n\n");
+ //     console.log("\n\n Go to 'node bamazonManager.js' for stock_quantity and department_name\n\n");
       chooseItem();
     });
 
