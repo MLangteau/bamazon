@@ -1,6 +1,6 @@
 # bamazon
 
-####  Bamazon is a "One of a kind" storefront app to take orders from customers, add stock to inventory, and deplete stock from inventory tally products' and departments' sales, and lots more using MySQL and Node.js.  It also tracks overhead costs and calculates total profit for each department.
+####  Bamazon is a "One of a kind" storefront app that can take orders from customers, add stock to inventory, deplete stock from inventory, tally products' and departments' sales, and more using MySQL and Node.js.  It also tracks overhead costs and calculates total profit for each department.
 
 ### The Customer Level will do the following (using node bamazonCustomer.js):
 
