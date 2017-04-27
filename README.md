@@ -25,18 +25,25 @@
         ![Alt text](images/departmentsMySQL.png?raw=true "Screenshot #5")
         
 ### The Manager Level will do the following (using node bamazonManager.js):
-    1.  Provides Managers the following list of menu options (see Screenshot #):
+    1.  Provides Managers the following list of menu options:
+        ![Alt text](images/managerOptions.png?raw=true "Screenshot #6")
     
-        * View Products for Sale - which prints a table of every available item for sale.  (screenshot provided #3),
+        * View Products forvisornts a table of every available item for sale.  (screenshot provided #6),
+        ![Alt text](images/managerDispAndMenu.png?raw=true "Screenshot #7")
+        
         * View Low Inventory - prints a table of each item with an inventory less than 5,
-        * Add to Inventory - Allows manager to add a specific amount the an item's inventory,
+        * Add to Inventory - Allows manager to add a specific amount the an item's inventory, (screenshot provided #7),
+        ![Alt text](images/addInventoryAndLowInventory.png?raw=true "Screenshot #8")
         * Add New Product - Allows manager to add a new item (the name, along with its department, price, and stock 
           quantity),
+        ![Alt text](images/addNewInventoryItem.png?raw=true "Screenshot #9")  
         * Quit the application.
         
  ### The Supervisor Level will do the following (using node bamazonSupervisor.js):
     1.  Provides Supervisors the following list of menu options (see Screenshot #):
         
         * View Product Sales by Department (Department ID, Department Name, Overhead Costs, Product Sales, Total Profit,
+        ![Alt text](images/supervisor.png?raw=true "Screenshot #10")
         * Create New Department,
+        ![Alt text](images/superViewAndAddNewDept.png?raw=true "Screenshot #10")
         * Quit the application.
