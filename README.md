@@ -21,35 +21,45 @@
         b.  update the products table with the amount purchased (total revenue of each transaction) added to the 
             products' sales column.  (see Screenshot #3 above)
         c.  and updates the departments table with the total sales for the related department (running tally of 
-        departments' sales).  (see Screenshot #4)
+            departments' sales).  (see Screenshot #4)
+        
 ######   ![Alt text](images/departmentsMySQL.png?raw=true "Screenshot #4")            
        
         * If not enough inventory:
         a.  Tell the user that there is "Insufficient Inventory" (see Screenshot #5)
         
-######     ![Alt text](images/departmentsMySQL.png?raw=true "Screenshot #5")
+######     ![Alt text](images/insufficientInventory.png?raw=true "Screenshot #5")
         
 ### The Manager Level will do the following (using node bamazonManager.js):
     1.  Provides Managers the following list of menu options:  (see Screenshot #6)
+    
 ######        ![Alt text](images/managerOptions.png?raw=true "Screenshot #6")
     
-        * View Products forvisornts a table of every available item for sale.  (screenshot provided #7),
+        * View Products for sale it display a table of every available item for sale.  
+          ( creenshot provided #7),
+          
 ######        ![Alt text](images/managerDispAndMenu.png?raw=true "Screenshot #7")
         
         * View Low Inventory - prints a table of each item with an inventory less than 5,
-        * Add to Inventory - Allows manager to add a specific amount the an item's inventory, (screenshot provided #8)
+        * Add to Inventory - Allows manager to add a specific amount the an item's inventory, 
+          (screenshot provided #8)
+          
 ######        ![Alt text](images/addInventoryAndLowInventory.png?raw=true "Screenshot #8")
-        * Add New Product - Allows manager to add a new item (the name, along with its department, price, and stock 
-          quantity),  (screenshot provided #9)
+        * Add New Product - Allows manager to add a new item (the name, along with its department,  
+          price, and stock quantity),  (screenshot provided #9)
+          
 ######        ![Alt text](images/addNewInventoryItem.png?raw=true "Screenshot #9")  
         * Quit the application.
         
  ### The Supervisor Level will do the following (using node bamazonSupervisor.js):
+ 
     1.  Provides Supervisors the following list of menu options (see Screenshot #):
-        
         * View Product Sales by Department (Department ID, Department Name, Overhead Costs, Product Sales, and 
           Total Profit,  (screenshot provided #10)
-        ![Alt text](images/supervisor.png?raw=true "Screenshot #10")
+         
+######        ![Alt text](images/supervisor.png?raw=true "Screenshot #10")
         * Create New Department,  (screenshot provided #11)
-        ![Alt text](images/superViewAndAddNewDept.png?raw=true "Screenshot #11")
         * Quit the application.
+        
+######        ![Alt text](images/superViewAndAddNewDept.png?raw=true "Screenshot #11")
+        
